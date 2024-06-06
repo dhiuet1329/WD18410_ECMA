@@ -25,8 +25,8 @@ const Login = () => {
         const res = await api.post(`/login`, data);
         localStorage.setItem("user", JSON.stringify(res.data));
         console.log(res);
-        if (confirm("Dang nhap thanh cong, tro lai home page ?")) {
-          nav("/");
+        if (confirm("Dang nhap thanh cong, tro lai admin page ?")) {
+          nav("/admin");
         }
       } catch (error) {
         alert(error.response.data || "Dang nhap that bai");
