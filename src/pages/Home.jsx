@@ -5,7 +5,7 @@ const Home = ({ data, removeProduct }) => {
   return (
     <>
       <h1>Hello, Admin</h1>
-      <Link to="/admin/product-add" className="btn btn-success">
+      <Link to="/admin/product-form" className="btn btn-success">
         Add new product
       </Link>
       <table className="table table-bordered table-striped text-center">
@@ -41,7 +41,7 @@ const Home = ({ data, removeProduct }) => {
                   Remove
                 </button>
                 <Link
-                  to={`/admin/product-edit/${p.id}`}
+                  to={`/admin/product-form/${p.id}`}
                   className="btn btn-warning"
                 >
                   Update

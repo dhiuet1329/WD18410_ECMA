@@ -1,72 +1,69 @@
 import { useEffect, useState } from "react";
 import "./App.scss";
-import { Link, Route, Routes, useNavigate } from "react-router-dom";
+import { Link, Route, Routes, useNavigate, useParams } from "react-router-dom";
 import api from "./axios";
 import Register from "./pages/Register";
-import ProductAdd from "./pages/ProductAdd";
-import ProductEdit from "./pages/ProductEdit";
+
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PrivateRoute from "./pages/PrivateRoute";
+import ProductForm from "./pages/ProductForm";
 
 function App() {
+  const { id } = useParams();
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   useEffect(() => {
     (async () => {
-      try {
-        const { data } = await api.get("/products");
-        setProducts(data);
-      } catch (error) {
-        console.log(error);
-      }
+      const { data } = await api.get("/products");
+      setProducts(data);
     })();
   }, []);
 
-  const handleSubmit = (data) => {
-    (async () => {
-      try {
-        const res = await api.post("/products", data);
-        setProducts([...products, res.data]);
-        if (confirm("Add succefully, redirect to home page?")) {
-          navigate("/admin");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    })();
+  // const handleSubmit = async (data) => {
+  //   const res = await api.post("/products", data);
+  //   setProducts([...products, res.data]);
+  //   if (confirm("Add succefully, redirect to admin page?")) {
+  //     navigate("/admin");
+  //   }
+  // };
+
+  // const handleSubmitEdit = async (data) => {
+  //   await api.patch(`/products/${data.id}`, data);
+  //   const newData = await api.get("/products");
+  //   setProducts(newData.data);
+  //   if (confirm("Add succefully, redirect to admin page?")) {
+  //     navigate("/admin");
+  //   }
+  // };
+
+  const handleProduct = async (data) => {
+    if (data.id) {
+      await api.patch(`/products/${data.id}`, data);
+      const newData = await api.get("/products");
+      setProducts(newData.data);
+    } else {
+      const res = await api.post("/products", data);
+      setProducts([...products, res.data]);
+    }
+    if (confirm("Add succefully, redirect to admin page?")) {
+      navigate("/admin");
+    }
   };
 
-  const handleSubmitEdit = (data) => {
-    (async () => {
-      try {
-        await api.patch(`/products/${data.id}`, data);
-        const newData = await api.get("/products");
-        setProducts(newData.data);
-        if (confirm("Add succefully, redirect to home page?")) {
-          navigate("/admin");
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  };
+  const removeProduct = async (id) => {
+    if (confirm("Are you sure?")) {
+      await api.delete(`/products/${id}`);
+      // Cach 1: fetch lai danh sach san pham
+      // const newData = await api.get(`/products`);
+      // setProducts(newData.data);
 
-  const removeProduct = (id) => {
-    (async () => {
-      if (confirm("Are you sure?")) {
-        await api.delete(`/products/${id}`);
-        // Cach 1: fetch lai danh sach san pham
-        // const newData = await api.get(`/products`);
-        // setProducts(newData.data);
-
-        // Cach 2: filter bo qua san pham vua bi xoa
-        const newData = products.filter((item) => item.id !== id && item);
-        setProducts(newData);
-      }
-    })();
+      //! Cach 2: filter bo qua san pham vua bi xoa
+      const newData = products.filter((item) => item.id !== id && item);
+      setProducts(newData);
+    }
   };
 
   const logout = () => {
@@ -81,7 +78,7 @@ function App() {
         <div>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/admin">Home</Link>
             </li>
 
             <li>
@@ -90,7 +87,7 @@ function App() {
             {user ? (
               <li>
                 <button onClick={logout} className="btn btn-danger">
-                  Hello{user?.user?.email} - Logout
+                  Hello {user?.user?.email} - Logout
                 </button>
               </li>
             ) : (
@@ -113,12 +110,12 @@ function App() {
               element={<Home data={products} removeProduct={removeProduct} />}
             />
             <Route
-              path="/admin/product-add"
-              element={<ProductAdd onAddProduct={handleSubmit} />}
+              path="/admin/product-form"
+              element={<ProductForm handleProduct={handleProduct} />}
             />
             <Route
-              path="/admin/product-edit/:id"
-              element={<ProductEdit onEditProduct={handleSubmitEdit} />}
+              path="/admin/product-form/:id"
+              element={<ProductForm handleProduct={handleProduct} />}
             />
           </Route>
         </Routes>

@@ -19,17 +19,15 @@ const Register = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    (async () => {
-      try {
-        await api.post(`/register`, data);
-        if (confirm("Dang ki thanh cong, tro lai login page ?")) {
-          nav("/login");
-        }
-      } catch (error) {
-        alert(error.response.data || "Dang ki that bai");
+  const onSubmit = async (data) => {
+    try {
+      await api.post(`/register`, data);
+      if (confirm("Dang ki thanh cong, tro lai login page ?")) {
+        nav("/login");
       }
-    })();
+    } catch (error) {
+      alert(error.response.data || "Dang ki that bai");
+    }
   };
   return (
     <div>

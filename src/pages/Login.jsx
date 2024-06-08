@@ -19,19 +19,17 @@ const Login = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    (async () => {
-      try {
-        const res = await api.post(`/login`, data);
-        localStorage.setItem("user", JSON.stringify(res.data));
-        console.log(res);
-        if (confirm("Dang nhap thanh cong, tro lai admin page ?")) {
-          nav("/admin");
-        }
-      } catch (error) {
-        alert(error.response.data || "Dang nhap that bai");
+  const onSubmit = async (data) => {
+    try {
+      const res = await api.post(`/login`, data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      console.log(res);
+      if (confirm("Dang nhap thanh cong, tro lai admin page ?")) {
+        nav("/admin");
       }
-    })();
+    } catch (error) {
+      alert(error.response.data || "Dang nhap that bai");
+    }
   };
   return (
     <div>
